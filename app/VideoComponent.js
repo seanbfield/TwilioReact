@@ -31,10 +31,37 @@ export default class VideoComponent extends Component {
   }
 
   render() {
+    let showLocalTrack = this.state.localMediaAvailable ? (
+      <RaisedButton
+        label="leave room"
+        secondary={true}
+        onClick={() => alert("leave room")} />
+    ) : (
+        <RaisedButton label="join room"
+          primary={true}
+          onClick={this.joinRoom}
+        />);
     return (
-      <div>
-        <h2>Video Component</h2>
-      </div>
+      <>
+        <Card>
+          <CardText>
+            <div className="flex-container">
+              {showLocalTrack} {/* Show local track if available */}
+              <div className="flex-item">
+                {/*
+                  The following text field is used to enter a room name. It calls  `handleRoomNameChange` method when the text changes which sets the `roomName` variable initialized in the state.
+                */}
+              </div>
+            </div>
+          </CardText>
+
+        </Card>
+
+
+
+        )
+      )
+      </>
     )
   }
 }
