@@ -20,7 +20,7 @@ export default class VideoComponent extends Component {
       hasJoinedRoom: false,
       activeRoom: null
     }
-    this.joinRoom = this.joinRoom, bind(this);
+    this.joinRoom = this.joinRoom.bind(this);
     this.handleRoomNameChange = this.handleRoomNameChange.bind(this)
   }
 
@@ -69,6 +69,8 @@ export default class VideoComponent extends Component {
 
   render() {
     let showLocalTrack = this.state.localMediaAvailable ? (
+      <div className="flex-item"><div ref="localMedia" /> </div>) : '';
+    let joinOrLeaveRoomButton = this.state.hasJoinedRoom ? (
       <RaisedButton
         label="leave room"
         secondary={true}
