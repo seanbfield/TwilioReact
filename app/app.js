@@ -1,10 +1,15 @@
+// Modules
 import React, { Component } from "react";
-import AppBar from 'material-ui/AppBar';
 import { render } from "react-dom";
+
+// Style
 import "./styles/styles.css";
+import AppBar from 'material-ui/AppBar';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
+// Components
 import VideoComponent from './VideoComponent';
 
 

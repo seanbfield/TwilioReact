@@ -1,16 +1,18 @@
-import React, { Component } from 'react'
+// NPM Modules
+import React from 'react'
 import Video from 'twilio-video'
 import axios from 'axios'
 
+
+// Material UI
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 import { Card, CardHeader, CardText } from 'material-ui/Card'
 
 
-export default class VideoComponent extends Component {
+export default class VideoComponent extends React.Component {
   constructor(props) {
-    super()
-
+    super();
     this.state = {
       identity: null,
       roomName: "",
@@ -29,20 +31,12 @@ export default class VideoComponent extends Component {
   }
 
 
-  componentDidMount() {
-    axios.get('/token')
-      .then(results => {
-        const { identity, token } = results.data
-        this.setState({ identity, token })
-      })
-  }
-
-
   handleRoomNameChange(e) {
     // Fetch room name and update state
     let roomName = e.target.value
     this.setState({ roomName })
   }
+
 
 
   // JOIN ROOM
@@ -67,16 +61,17 @@ export default class VideoComponent extends Component {
     // Provide token & connection options including room and tracks. Show alert if error happens when connecting.
 
     Video.connect(this.state.token, connectOptions).then(this.roomJoined, error => {
-      alert('Twilio API connection unavailable: ' + error.message)
-    })
+      alert('Could not connect to Twilio: ' + error.message);
+    });
   }
+
 
 
   //Attach Tracks to the DOM
 
   attachTracks(tracks, container) {
     tracks.forEach(track => {
-      container.appendChild(track.attach())
+      container.appendChild(track.attach());
     })
   }
 
@@ -84,7 +79,7 @@ export default class VideoComponent extends Component {
   // Attach chat particpant Tracks to the DOM
 
   attachParticpantTracks(participant, container) {
-    const tracks = Array.from(participant.tracks.values())
+    var tracks = Array.from(participant.tracks.values())
     this.attachTracks(tracks, container)
   }
 
@@ -95,9 +90,9 @@ export default class VideoComponent extends Component {
       activeRoom: room,
       localMediaAvailable: true,
       hasJoinedRoom: true // Removes 'join room button and displays 'leave room button'
-    })
+    });
 
-    var previewContainer = this.refs.localMedia
+    var previewContainer = this.refs.localMedia;
     if (!previewContainer.querySelector('video')) {
       this.attachParticipantTracks(room.localParticipant, previewContainer)
     }
@@ -171,6 +166,15 @@ export default class VideoComponent extends Component {
   detachParticpantTracks(participant) {
     const tracks = Array.from(participant.tracks.values())
     this.detachTracks(tracks)
+  }
+
+
+  async componentDidMount() {
+    axios.get('/token')
+      .then(results => {
+        const { identity, token } = results.data
+        this.setState({ identity, token })
+      })
   }
 
 
