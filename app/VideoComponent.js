@@ -20,7 +20,10 @@ export default class VideoComponent extends Component {
       hasJoinedRoom: false,
       activeRoom: null
     }
+    this.joinRoom = this.joinRoom, bind(this);
+    this.handleRoomNameChange = this.handleRoomNameChange.bind(this)
   }
+
 
   componentDidMount() {
     axios.get('/token')
@@ -29,6 +32,40 @@ export default class VideoComponent extends Component {
         this.setState({ identity, token });
       });
   }
+
+
+  handleRoomNameChange(e) {
+    // Fetch room name and update state
+    let roomName = e.target.value;
+    this.setState({ roomName });
+  }
+  joinRoom() {
+
+    // Show error message on room name
+
+    if (!this.state.roomNameErr.trim()) {
+      this.setState({ roomNameErr: true });
+      return;
+    }
+
+    console.log("joining room '" + this.state.roomName + " '...");
+    let connectOptions = {
+      name: this.state.roomName
+    }
+
+    if (this.state.previewTracks) {
+      connectOptions.tracks = this.state.previewTracks
+    }
+
+    // Provide token & connection options including room and tracks. Show alert if error happens when connecting.
+
+    Video.connect(this.state.token, connectOptions).then(this.roomJoined, error => {
+      alert('Twilion API connection unavailable: ' + error.message);
+    })
+
+  }
+
+
 
   render() {
     let showLocalTrack = this.state.localMediaAvailable ? (
@@ -41,27 +78,30 @@ export default class VideoComponent extends Component {
           primary={true}
           onClick={this.joinRoom}
         />);
+
     return (
-      <>
-        <Card>
-          <CardText>
-            <div className="flex-container">
-              {showLocalTrack} {/* Show local track if available */}
-              <div className="flex-item">
-                {/*
+
+      <Card>
+        <CardText>
+          <div className="flex-container">
+            {showLocalTrack} {/* Show local track if available */}
+            <div className="flex-item">
+              {/*
                   The following text field is used to enter a room name. It calls  `handleRoomNameChange` method when the text changes which sets the `roomName` variable initialized in the state.
                 */}
-              </div>
+              <TextField hintText="Room Name" onChange={this.handleRoomNameChange}
+                errorText={this.state.roomNameErr ? 'Room Name is required' : undefined}
+              />
+              <br />
+              {joinOrLeaveRoomButton} {/* Show either ‘Leave Room’ or ‘Join Room’ button */}
             </div>
-          </CardText>
-
-        </Card>
-
-
-
-        )
-      )
-      </>
+            {/* 
+The following div element shows all remote media (other                             participant’s tracks) 
+    */}
+            <div className="flex-item" ref="remoteMedia" id="remote-media" />
+          </div>
+        </CardText>
+      </Card>
     )
   }
 }
