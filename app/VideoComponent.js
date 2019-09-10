@@ -21,7 +21,9 @@ export default class VideoComponent extends Component {
       activeRoom: null
     }
     this.joinRoom = this.joinRoom.bind(this);
-    this.handleRoomNameChange = this.handleRoomNameChange.bind(this)
+    this.handleRoomNameChange = this.handleRoomNameChange.bind(this);
+    this.roomJoined = this.roomJoined.bind(this);
+    this.leaveRoom = this.leaveRoom.bind(this);
   }
 
 
@@ -39,11 +41,14 @@ export default class VideoComponent extends Component {
     let roomName = e.target.value;
     this.setState({ roomName });
   }
+
+
+  // JOIN ROOM
   joinRoom() {
 
     // Show error message on room name
 
-    if (!this.state.roomNameErr.trim()) {
+    if (!this.state.roomName.trim()) {
       this.setState({ roomNameErr: true });
       return;
     }
@@ -66,15 +71,56 @@ export default class VideoComponent extends Component {
   }
 
 
+  //Attach Tracks to the DOM
+
+  attachTracks(tracks, container) {
+    tracks.forEach(track => {
+      container.appendChild(track.attach());
+    });
+  }
+
+  // Attach chat particpant Tracks to the DOM
+
+  attachParticpantTracks(participant, container) {
+    const tracks = Array.from(participant.tracks.values());
+    this.attachTracks(tracks, container)
+  }
+
+  roomJoined(room) {
+    //Initialized when a particpant joins a room
+    console.log(("joined as '" + this.state.identity + "'"));
+    this.setState({
+      activeRoom: room,
+      localMediaAvailable: true,
+      hasJoinedRoom: true // Removes 'join room button and displays 'leave room button'
+    })
+
+    const previewContainer = this.refs.localMedia;
+    if (!previewContainer.querySelector('video')) {
+      this.attachParticpantTracks(room.localParticpan, previewContainer);
+    }
+  }
+
+  // LEAVE ROOM
+
+  leaveRoom() {
+    this.state.activeRoom.disconnect();
+    this.setState({ hasJoinedRoom: false, localMediaAvailable: false });
+  }
+
+
+
+
 
   render() {
     let showLocalTrack = this.state.localMediaAvailable ? (
       <div className="flex-item"><div ref="localMedia" /> </div>) : '';
     let joinOrLeaveRoomButton = this.state.hasJoinedRoom ? (
+
       <RaisedButton
         label="leave room"
         secondary={true}
-        onClick={() => alert("leave room")} />
+        onClick={this.leaveRoom} />
     ) : (
         <RaisedButton label="join room"
           primary={true}
