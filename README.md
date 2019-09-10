@@ -1,2 +1,2 @@
 # TwilioReact
-A React Video Chat app using Twilio Video
+A React Video Chat app using the Twilio Video API.
